@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +58,7 @@ public class BlueprintMappingScreen extends Screen {
         int listHeight = this.height - 120;
 
         // ID 列表 (左侧)
-        this.idList = new IdList(this.minecraft, sidePanelWidth, listHeight, 40, 25);
+        this.idList = new IdList(this.minecraft, sidePanelWidth, listHeight, 40, 40 + listHeight, 25);
         this.idList.setX(10);
         this.addRenderableWidget(this.idList);
 
@@ -75,7 +76,7 @@ public class BlueprintMappingScreen extends Screen {
         }).bounds(10 + sidePanelWidth - 25, 15, 20, 20).build());
 
         // 蓝图列表 (右侧)
-        this.blueprintList = new BlueprintSelectionList(this.minecraft, mainPanelWidth, listHeight, 40, 20);
+        this.blueprintList = new BlueprintSelectionList(this.minecraft, mainPanelWidth, listHeight, 40, 40 + listHeight, 20);
         this.blueprintList.setX(sidePanelWidth + 20);
         this.addRenderableWidget(this.blueprintList);
 
@@ -234,8 +235,8 @@ public class BlueprintMappingScreen extends Screen {
 
     // --- 内部类：ID 列表 ---
     class IdList extends ObjectSelectionList<IdEntry> {
-        public IdList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public IdList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
 
         public void add(IdEntry entry) {
@@ -253,8 +254,10 @@ public class BlueprintMappingScreen extends Screen {
 
         @Override
         public int getRowLeft() {
-            return this.getX() + 5;
+            return this.x0 + 5;
         }
+
+        public void setX(int x) { this.x0 = x; }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -286,10 +289,10 @@ public class BlueprintMappingScreen extends Screen {
             // 渲染背景和边框
             if (isSelected) {
                 guiGraphics.fill(left, y, left + width, y + height, 0x44FFFFFF);
-                guiGraphics.renderOutline(left, y, width, height, 0xFFFFCC00);
+                GuiCompat.renderOutline(guiGraphics, left, y, width, height, 0xFFFFCC00);
             } else if (isHovered) {
                 guiGraphics.fill(left, y, left + width, y + height, 0x22FFFFFF);
-                guiGraphics.renderOutline(left, y, width, height, 0xFF888888);
+                GuiCompat.renderOutline(guiGraphics, left, y, width, height, 0xFF888888);
             }
 
             // 渲染图标
@@ -339,8 +342,8 @@ public class BlueprintMappingScreen extends Screen {
 
     // --- 内部类：蓝图列表 ---
     class BlueprintSelectionList extends ObjectSelectionList<BlueprintMappingEntry> {
-        public BlueprintSelectionList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public BlueprintSelectionList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
 
         public void add(BlueprintMappingEntry entry) {
@@ -358,8 +361,11 @@ public class BlueprintMappingScreen extends Screen {
 
         @Override
         public int getRowLeft() {
-            return this.getX() + 5;
+            return this.x0 + 5;
         }
+
+        public void setX(int x) { this.x0 = x; }
+        public int getX() { return this.x0; }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -390,7 +396,7 @@ public class BlueprintMappingScreen extends Screen {
             // 渲染背景
             if (isHovered) {
                 guiGraphics.fill(left, y, left + width, y + height, 0x22FFFFFF);
-                guiGraphics.renderOutline(left, y, width, height, 0xFF888888);
+                GuiCompat.renderOutline(guiGraphics, left, y, width, height, 0xFF888888);
             }
 
             int color = isHovered ? 0xFFFFFFFF : 0xFFAAAAAA;

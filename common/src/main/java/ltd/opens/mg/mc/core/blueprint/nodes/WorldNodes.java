@@ -36,7 +36,7 @@ public class WorldNodes {
                 float pitch = (float)TypeConverter.toDouble(NodeLogicRegistry.evaluateInput(node, NodePorts.PITCH, ctx));
                 
                 if (xyzObj instanceof XYZ xyz && ctx.level != null) {
-                    ResourceLocation rl = ResourceLocation.parse(soundId);
+                    ResourceLocation rl = new ResourceLocation(soundId);
                     SoundEvent soundEvent = BuiltInRegistries.SOUND_EVENT.get(rl);
                     if (soundEvent != null) {
                         ctx.level.playSound(null, new BlockPos((int)xyz.x(), (int)xyz.y(), (int)xyz.z()), soundEvent, SoundSource.MASTER, volume, pitch);

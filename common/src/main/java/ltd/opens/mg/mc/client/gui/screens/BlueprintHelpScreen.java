@@ -31,7 +31,7 @@ public class BlueprintHelpScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         // 1. 首先绘制背景（模糊/暗化）
-        this.renderTransparentBackground(guiGraphics);
+        this.renderDirtBackground(guiGraphics);
 
         // 2. 绘制侧边栏背景
         guiGraphics.fill(0, 0, sidebarWidth, this.height, 0xAA222222);
@@ -64,7 +64,7 @@ public class BlueprintHelpScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(GuiGraphics guiGraphics) {
         // 覆盖此方法并留空，防止 super.render 再次绘制背景导致变暗或遮挡
     }
 

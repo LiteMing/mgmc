@@ -8,6 +8,7 @@ import ltd.opens.mg.mc.core.blueprint.NodeDefinition;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -216,7 +217,7 @@ public class BlueprintMenu {
         if (filteredResults.isEmpty()) {
             guiGraphics.drawString(font, Component.translatable("gui.mgmc.blueprint_editor.no_nodes_found"), x + 8, contentY + 8, 0xFF888888, false);
         } else {
-            guiGraphics.enableScissor(x, contentY + 3, x + width, contentY + height - 3);
+            RenderSystem.enableScissor(x, contentY + 3, width, height - 6);
             int totalHeight = filteredResults.size() * itemHeight;
             scrollAmount = Mth.clamp(scrollAmount, 0, Math.max(0, totalHeight - (displayCount * itemHeight)));
             
@@ -246,7 +247,7 @@ public class BlueprintMenu {
                     BlueprintMenuRenderer.renderHighlightedString(guiGraphics, font, cat, x + width - font.width(cat) - 8, itemY + 4, 0xFF666666, getSearchQuery());
                 }
             }
-            guiGraphics.disableScissor();
+            RenderSystem.disableScissor();
             BlueprintMenuRenderer.renderScrollbar(guiGraphics, x + width - 4, contentY + 3, 2, height - 6, scrollAmount, totalHeight);
         }
     }
@@ -284,7 +285,7 @@ public class BlueprintMenu {
         lastMenuContentY = contentY;
         lastMenuHeight = height;
         
-        guiGraphics.enableScissor(x, contentY + 3, x + width, contentY + height - 3);
+        RenderSystem.enableScissor(x, contentY + 3, width, height - 6);
         int totalHeight = totalItems * itemHeight;
         scrollAmount = Mth.clamp(scrollAmount, 0, Math.max(0, totalHeight - (displayCount * itemHeight)));
 
@@ -325,7 +326,7 @@ public class BlueprintMenu {
             }
             currentIdx++;
         }
-        guiGraphics.disableScissor();
+        RenderSystem.disableScissor();
         BlueprintMenuRenderer.renderScrollbar(guiGraphics, x + width - 4, contentY + 3, 2, height - 6, scrollAmount, totalHeight);
 
         updateSubmenu(mouseX, mouseY, x, width, contentY, height, screenWidth, screenHeight, font, itemHeight, maxVisibleItems, hasBack, filteredSubCategories, currentHoveredCatInMain);
@@ -429,7 +430,7 @@ public class BlueprintMenu {
         if (subY < 0) subY = 5;
 
         BlueprintMenuRenderer.renderBackground(guiGraphics, subX, subY, subMenuWidth, subHeight);
-        guiGraphics.enableScissor(subX, subY + 3, subX + subMenuWidth, subY + subHeight - 3);
+        RenderSystem.enableScissor(subX, subY + 3, subMenuWidth, subHeight - 6);
         int subTotalHeight = catNodes.size() * itemHeight;
         subScrollAmount = Mth.clamp(subScrollAmount, 0, Math.max(0, subTotalHeight - (subDisplayCount * itemHeight)));
 
@@ -444,7 +445,7 @@ public class BlueprintMenu {
             }
             guiGraphics.drawString(font, Component.translatable(def.name()), subX + 8, itemY + 4, 0xFFFFFFFF, false);
         }
-        guiGraphics.disableScissor();
+        RenderSystem.disableScissor();
         BlueprintMenuRenderer.renderScrollbar(guiGraphics, subX + subMenuWidth - 4, subY + 3, 2, subHeight - 6, subScrollAmount, subTotalHeight);
     }
 

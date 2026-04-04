@@ -2,9 +2,6 @@ package ltd.opens.mg.mc.network.payloads;
 
 import ltd.opens.mg.mc.MaingraphforMC;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.HashMap;
@@ -12,21 +9,26 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public record ImportBlueprintPayload(String name, String data, Map<String, Set<String>> mappings) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ImportBlueprintPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MaingraphforMC.MODID, "import_blueprint"));
+public record ImportBlueprintPayload(String name, String data, Map<String, Set<String>> mappings) {
+    public static final ResourceLocation ID = new ResourceLocation(MaingraphforMC.MODID, "import_blueprint");
 
-    public static final StreamCodec<FriendlyByteBuf, ImportBlueprintPayload> STREAM_CODEC = StreamCodec.composite(
-        ByteBufCodecs.STRING_UTF8,
-        ImportBlueprintPayload::name,
-        ByteBufCodecs.stringUtf8(1048576),
-        ImportBlueprintPayload::data,
-        ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.collection(HashSet::new, ByteBufCodecs.STRING_UTF8)),
-        ImportBlueprintPayload::mappings,
-        ImportBlueprintPayload::new
-    );
+    public static ImportBlueprintPayload decode(FriendlyByteBuf buf) {
+        String name = buf.readUtf();
+        String data = buf.readUtf(1048576);
+        Map<String, Set<String>> map = buf.readMap(
+            HashMap::new,
+            FriendlyByteBuf::readUtf,
+            b -> b.readCollection(HashSet::new, FriendlyByteBuf::readUtf)
+        );
+        return new ImportBlueprintPayload(name, data, map);
+    }
 
-    @Override
-    public Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static void encode(FriendlyByteBuf buf, ImportBlueprintPayload payload) {
+        buf.writeUtf(payload.name());
+        buf.writeUtf(payload.data(), 1048576);
+        buf.writeMap(payload.mappings(),
+            FriendlyByteBuf::writeUtf,
+            (b, set) -> b.writeCollection(set, FriendlyByteBuf::writeUtf)
+        );
     }
 }

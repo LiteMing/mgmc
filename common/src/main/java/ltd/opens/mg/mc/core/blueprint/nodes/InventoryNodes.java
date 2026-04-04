@@ -16,8 +16,6 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import ltd.opens.mg.mc.MaingraphforMC;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.component.CustomData;
 
 public class InventoryNodes {
 
@@ -41,14 +39,14 @@ public class InventoryNodes {
 
                 if (entityObj instanceof ServerPlayer player) {
                     try {
-                        ResourceLocation rl = ResourceLocation.parse(itemId);
+                        ResourceLocation rl = new ResourceLocation(itemId);
                         Item item = BuiltInRegistries.ITEM.get(rl);
                         if (item != Items.AIR) {
                             ItemStack stack = new ItemStack(item, count);
                             if (nbtStr != null && !nbtStr.isEmpty() && !nbtStr.equals("{}")) {
                                 try {
                                     CompoundTag tag = TagParser.parseTag(nbtStr);
-                                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                                    stack.setTag(tag);
                                 } catch (Exception e) {
                                     MaingraphforMC.LOGGER.error("Error parsing NBT in give_item node: " + node.get("id"), e);
                                 }
@@ -79,7 +77,7 @@ public class InventoryNodes {
 
                 if (entityObj instanceof ServerPlayer player) {
                      try {
-                        ResourceLocation rl = ResourceLocation.parse(itemId);
+                        ResourceLocation rl = new ResourceLocation(itemId);
                         Item item = BuiltInRegistries.ITEM.get(rl);
                         if (item != Items.AIR) {
                              if (count <= 0) {
@@ -112,7 +110,7 @@ public class InventoryNodes {
                 
                 if (entityObj instanceof ServerPlayer player) {
                      try {
-                        ResourceLocation rl = ResourceLocation.parse(itemId);
+                        ResourceLocation rl = new ResourceLocation(itemId);
                         Item item = BuiltInRegistries.ITEM.get(rl);
                         if (item != Items.AIR) {
                             return player.getInventory().clearOrCountMatchingItems(p -> p.getItem() == item, 0, player.inventoryMenu.getCraftSlots());
@@ -138,7 +136,7 @@ public class InventoryNodes {
                 
                 if (entityObj instanceof ServerPlayer player) {
                      try {
-                        ResourceLocation rl = ResourceLocation.parse(itemId);
+                        ResourceLocation rl = new ResourceLocation(itemId);
                         Item item = BuiltInRegistries.ITEM.get(rl);
                         if (item != Items.AIR) {
                             return player.getInventory().contains(new ItemStack(item));
@@ -163,12 +161,12 @@ public class InventoryNodes {
             .registerValue((node, port, ctx) -> {
                 String itemId = TypeConverter.toString(NodeLogicRegistry.evaluateInput(node, NodePorts.ITEM_ID, ctx), ctx);
                 try {
-                    ResourceLocation rl = ResourceLocation.parse(itemId);
+                    ResourceLocation rl = new ResourceLocation(itemId);
                     Item item = BuiltInRegistries.ITEM.get(rl);
                     if (item != Items.AIR) {
-                        if (port.equals(NodePorts.MAX_STACK_SIZE)) return item.getDefaultMaxStackSize();
+                        if (port.equals(NodePorts.MAX_STACK_SIZE)) return item.getMaxStackSize();
                         if (port.equals(NodePorts.MAX_DAMAGE)) return item.getDefaultInstance().getMaxDamage();
-                        if (port.equals(NodePorts.IS_FOOD)) return item.components().has(DataComponents.FOOD);
+                        if (port.equals(NodePorts.IS_FOOD)) return item.isEdible();
                         if (port.equals(NodePorts.IS_BLOCK_ITEM)) return item instanceof net.minecraft.world.item.BlockItem;
                     }
                 } catch (Exception e) {
@@ -200,8 +198,8 @@ public class InventoryNodes {
                             if (port.equals(NodePorts.ITEM_ID)) return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
                             if (port.equals(NodePorts.COUNT)) return stack.getCount();
                             if (port.equals(NodePorts.NBT)) {
-                                 CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-                                 return data != null ? data.getUnsafe().toString() : "{}";
+                                 CompoundTag tag = stack.getTag();
+                                 return tag != null ? tag.toString() : "{}";
                             }
                         }
                     } catch (Exception e) {

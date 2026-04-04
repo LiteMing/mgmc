@@ -2,24 +2,20 @@ package ltd.opens.mg.mc.network.payloads;
 
 import ltd.opens.mg.mc.MaingraphforMC;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public record ResponseBlueprintListPayload(List<String> blueprints) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ResponseBlueprintListPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MaingraphforMC.MODID, "response_blueprint_list"));
-    
-    public static final StreamCodec<FriendlyByteBuf, ResponseBlueprintListPayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8.apply(ByteBufCodecs.list()),
-            ResponseBlueprintListPayload::blueprints,
-            ResponseBlueprintListPayload::new
-    );
+public record ResponseBlueprintListPayload(List<String> blueprints) {
+    public static final ResourceLocation ID = new ResourceLocation(MaingraphforMC.MODID, "response_blueprint_list");
 
-    @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static ResponseBlueprintListPayload decode(FriendlyByteBuf buf) {
+        List<String> list = buf.readCollection(ArrayList::new, FriendlyByteBuf::readUtf);
+        return new ResponseBlueprintListPayload(list);
+    }
+
+    public static void encode(FriendlyByteBuf buf, ResponseBlueprintListPayload payload) {
+        buf.writeCollection(payload.blueprints(), FriendlyByteBuf::writeUtf);
     }
 }

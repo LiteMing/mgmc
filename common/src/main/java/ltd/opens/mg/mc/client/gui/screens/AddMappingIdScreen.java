@@ -7,6 +7,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -46,7 +47,7 @@ public class AddMappingIdScreen extends Screen {
         this.searchBox.setResponder(this::onSearchChanged);
         this.addRenderableWidget(this.searchBox);
 
-        this.suggestionList = new SuggestionList(this.minecraft, listWidth, listHeight, centerY - 75, 25);
+        this.suggestionList = new SuggestionList(this.minecraft, listWidth, listHeight, centerY - 75, centerY - 75 + listHeight, 25);
         this.suggestionList.setX(centerX - 150);
         this.addRenderableWidget(this.suggestionList);
 
@@ -63,7 +64,7 @@ public class AddMappingIdScreen extends Screen {
 
         updateSuggestions("");
         Minecraft.getInstance().execute(() -> {
-            this.setInitialFocus(this.searchBox);
+            this.searchBox.setFocused(true);
         });
     }
 
@@ -118,14 +119,14 @@ public class AddMappingIdScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+    public void renderBackground(GuiGraphics guiGraphics) {
+        super.renderBackground(guiGraphics);
         
         // 绘制模态框背景
         int centerX = this.width / 2;
         int centerY = this.height / 2;
         guiGraphics.fillGradient(centerX - 160, centerY - 110, centerX + 160, centerY + 115, 0xEE101010, 0xEE101010);
-        guiGraphics.renderOutline(centerX - 160, centerY - 110, 320, 225, 0xFF555555);
+        GuiCompat.renderOutline(guiGraphics, centerX - 160, centerY - 110, 320, 225, 0xFF555555);
     }
 
     @Override
@@ -154,8 +155,8 @@ public class AddMappingIdScreen extends Screen {
     }
 
     class SuggestionList extends ObjectSelectionList<SuggestionEntry> {
-        public SuggestionList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public SuggestionList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
 
         public void add(SuggestionEntry entry) {
@@ -168,8 +169,10 @@ public class AddMappingIdScreen extends Screen {
 
         @Override
         public int getRowWidth() { return this.width - 10; }
+        public void setX(int x) { this.x0 = x; }
+
         @Override
-        public int getRowLeft() { return this.getX() + 5; }
+        public int getRowLeft() { return this.x0 + 5; }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -194,10 +197,10 @@ public class AddMappingIdScreen extends Screen {
             // 渲染背景和边框
             if (isSelected) {
                 guiGraphics.fill(left, y, left + width, y + height, 0x44FFFFFF);
-                guiGraphics.renderOutline(left, y, width, height, 0xFFFFCC00);
+                GuiCompat.renderOutline(guiGraphics, left, y, width, height, 0xFFFFCC00);
             } else if (isHovered) {
                 guiGraphics.fill(left, y, left + width, y + height, 0x22FFFFFF);
-                guiGraphics.renderOutline(left, y, width, height, 0xFF888888);
+                GuiCompat.renderOutline(guiGraphics, left, y, width, height, 0xFF888888);
             }
 
             // 绘制图标

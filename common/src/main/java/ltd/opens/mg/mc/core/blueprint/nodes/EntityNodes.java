@@ -8,7 +8,6 @@ import ltd.opens.mg.mc.core.blueprint.data.XYZ;
 import ltd.opens.mg.mc.core.blueprint.engine.NodeLogicRegistry;
 import ltd.opens.mg.mc.core.blueprint.engine.TypeConverter;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
@@ -22,7 +21,6 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
 import ltd.opens.mg.mc.MaingraphforMC;
 
 public class EntityNodes {
@@ -43,13 +41,13 @@ public class EntityNodes {
                 @Override
                 public void execute(com.google.gson.JsonObject node, ltd.opens.mg.mc.core.blueprint.engine.NodeContext ctx) {
                     Object xyzObj = NodeLogicRegistry.evaluateInput(node, NodePorts.XYZ, ctx);
-                    String entityId = TypeConverter.toString(NodeLogicRegistry.evaluateInput(node, NodePorts.ENTITY_UUID, ctx), ctx); // Reuse ENTITY_UUID as ID input
+                    String entityId = TypeConverter.toString(NodeLogicRegistry.evaluateInput(node, NodePorts.ENTITY_UUID, ctx), ctx);
                     String nbtStr = TypeConverter.toString(NodeLogicRegistry.evaluateInput(node, NodePorts.NBT, ctx), ctx);
                     
                     Entity spawnedEntity = null;
                     if (xyzObj instanceof XYZ xyz && ctx.level instanceof ServerLevel serverLevel) {
                         try {
-                            ResourceLocation rl = ResourceLocation.parse(entityId);
+                            ResourceLocation rl = new ResourceLocation(entityId);
                             EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.get(rl);
                             CompoundTag tag = null;
                             if (nbtStr != null && !nbtStr.isEmpty() && !nbtStr.equals("{}")) {
@@ -72,7 +70,6 @@ public class EntityNodes {
                         }
                     }
                     
-                    // Store spawned entity for output
                     ctx.setRuntimeData(node.get("id").getAsString(), NodePorts.ENTITY, spawnedEntity);
                     NodeLogicRegistry.triggerExec(node, NodePorts.EXEC, ctx);
                 }
@@ -104,8 +101,8 @@ public class EntityNodes {
                         if (portId.equals(NodePorts.ITEM_ID)) return BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
                         if (portId.equals(NodePorts.COUNT)) return stack.getCount();
                         if (portId.equals(NodePorts.NBT)) {
-                             CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-                             return data != null ? data.getUnsafe().toString() : "{}";
+                             CompoundTag tag = stack.getTag();
+                             return tag != null ? tag.toString() : "{}";
                         }
                     }
                 }
@@ -137,7 +134,7 @@ public class EntityNodes {
                 if (entityObj instanceof LivingEntity entity) {
                     try {
                         EquipmentSlot slot = EquipmentSlot.byName(slotName);
-                        ResourceLocation rl = ResourceLocation.parse(itemId);
+                        ResourceLocation rl = new ResourceLocation(itemId);
                         Item item = BuiltInRegistries.ITEM.get(rl);
                         
                         if (slot != null && item != Items.AIR) {
@@ -145,7 +142,7 @@ public class EntityNodes {
                             if (nbtStr != null && !nbtStr.isEmpty() && !nbtStr.equals("{}")) {
                                 try {
                                     CompoundTag tag = TagParser.parseTag(nbtStr);
-                                    stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+                                    stack.setTag(tag);
                                 } catch (Exception e) {
                                     MaingraphforMC.LOGGER.error("Error parsing NBT in set_equipment: " + node.get("id"), e);
                                 }

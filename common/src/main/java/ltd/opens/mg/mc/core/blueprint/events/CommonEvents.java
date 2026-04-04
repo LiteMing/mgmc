@@ -9,7 +9,6 @@ import dev.architectury.event.events.common.PlayerEvent;
 import ltd.opens.mg.mc.core.blueprint.EventDispatcher;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Entity.RemovalReason;
 
 public class CommonEvents {
     public static void init() {
@@ -56,8 +55,8 @@ public class CommonEvents {
         });
 
         PlayerEvent.ATTACK_ENTITY.register((player, level, target, hand, result) -> {
-            if (level.isClientSide()) return EventResult.pass();
-            EventDispatcher.dispatch(MGMCEventType.PLAYER_ATTACK, MGMCEventContext.builder(level)
+            if (player.level().isClientSide()) return EventResult.pass();
+            EventDispatcher.dispatch(MGMCEventType.PLAYER_ATTACK, MGMCEventContext.builder(player.level())
                 .player(player)
                 .entity(player)
                 .targetEntity(target)
@@ -99,7 +98,7 @@ public class CommonEvents {
             return EventResult.pass();
         });
 
-        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd, reason) -> {
+        PlayerEvent.PLAYER_RESPAWN.register((player, conqueredEnd) -> {
             if (player.level().isClientSide()) return;
             EventDispatcher.dispatch(MGMCEventType.PLAYER_RESPAWN, MGMCEventContext.builder(player.level())
                 .player(player)

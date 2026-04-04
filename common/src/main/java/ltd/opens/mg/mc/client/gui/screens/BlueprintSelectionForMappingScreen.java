@@ -7,6 +7,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class BlueprintSelectionForMappingScreen extends Screen {
 
     @Override
     protected void init() {
-        this.list = new BlueprintList(this.minecraft, this.width, this.height - 60, 30, 24);
+        this.list = new BlueprintList(this.minecraft, this.width, this.height - 60, 30, this.height - 30, 24);
         this.addRenderableWidget(this.list);
 
         this.addRenderableWidget(Button.builder(Component.translatable("gui.mgmc.mapping.select"), b -> {
@@ -85,8 +86,8 @@ public class BlueprintSelectionForMappingScreen extends Screen {
     }
 
     class BlueprintList extends ObjectSelectionList<BlueprintEntry> {
-        public BlueprintList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public BlueprintList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
         public void add(BlueprintEntry entry) { super.addEntry(entry); }
         public void clear() { super.clearEntries(); }
@@ -114,10 +115,10 @@ public class BlueprintSelectionForMappingScreen extends Screen {
             // 渲染背景和边框
             if (isSelected) {
                 guiGraphics.fill(left, y, left + width, y + height, 0x44FFFFFF);
-                guiGraphics.renderOutline(left, y, width, height, 0xFFFFCC00);
+                GuiCompat.renderOutline(guiGraphics, left, y, width, height, 0xFFFFCC00);
             } else if (isHovered) {
                 guiGraphics.fill(left, y, left + width, y + height, 0x22FFFFFF);
-                guiGraphics.renderOutline(left, y, width, height, 0xFF888888);
+                GuiCompat.renderOutline(guiGraphics, left, y, width, height, 0xFF888888);
             }
 
             int color = isSelected ? 0xFFFFCC00 : (isHovered ? 0xFFFFFFFF : 0xFFAAAAAA);

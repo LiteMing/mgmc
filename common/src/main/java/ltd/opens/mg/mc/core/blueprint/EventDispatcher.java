@@ -109,16 +109,14 @@ public class EventDispatcher {
         var manager = MaingraphforMC.getServerManager();
         if (manager == null) return;
         
-        if (stack.has(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get())) {
-             List<String> scripts = stack.get(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get());
-             if (scripts != null) {
-                for (String path : scripts) {
-                    JsonObject bp = manager.getBlueprint(level, path);
-                    if (bp != null) {
-                        out.add(bp);
-                    }
+        List<String> scripts = ltd.opens.mg.mc.core.registry.BlueprintItemHelper.getScripts(stack);
+        if (!scripts.isEmpty()) {
+            for (String path : scripts) {
+                JsonObject bp = manager.getBlueprint(level, path);
+                if (bp != null) {
+                    out.add(bp);
                 }
-             }
+            }
         }
     }
 }

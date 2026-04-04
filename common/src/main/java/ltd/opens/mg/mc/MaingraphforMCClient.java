@@ -8,12 +8,13 @@ import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import ltd.opens.mg.mc.client.ClientSetup;
 import ltd.opens.mg.mc.client.gui.screens.AboutScreen;
 import ltd.opens.mg.mc.client.gui.screens.BlueprintSelectionScreen;
-import ltd.opens.mg.mc.core.registry.MGMCRegistries;
+import ltd.opens.mg.mc.core.registry.BlueprintItemHelper;
 import ltd.opens.mg.mc.core.blueprint.nodes.ClientNodes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.TooltipFlag;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
@@ -68,9 +69,9 @@ public class MaingraphforMCClient {
         }
     }
 
-    private static void onItemTooltip(net.minecraft.world.item.ItemStack stack, List<Component> lines, net.minecraft.world.item.Item.TooltipContext context, net.minecraft.world.item.TooltipFlag flag) {
+    private static void onItemTooltip(net.minecraft.world.item.ItemStack stack, List<Component> lines, TooltipFlag flag) {
         if (Minecraft.getInstance().player != null && Minecraft.getInstance().player.isCreative()) {
-             if (stack.has(MGMCRegistries.BLUEPRINT_SCRIPTS.get())) {
+             if (BlueprintItemHelper.hasScripts(stack)) {
                  lines.add(Component.translatable("tooltip.mgmc.item_bound").withStyle(ChatFormatting.GOLD));
              }
         }

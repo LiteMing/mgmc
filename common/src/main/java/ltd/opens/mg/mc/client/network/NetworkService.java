@@ -1,8 +1,8 @@
 package ltd.opens.mg.mc.client.network;
 
+import ltd.opens.mg.mc.network.MGMCNetwork;
 import ltd.opens.mg.mc.network.payloads.*;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -20,87 +20,47 @@ public class NetworkService {
         return INSTANCE;
     }
 
-    /**
-     * 保存蓝图数据
-     */
     public void saveBlueprint(String name, String json, long version) {
-        sendPacket(new SaveBlueprintPayload(name, json, version));
+        MGMCNetwork.sendToServer(new SaveBlueprintPayload(name, json, version));
     }
 
-    /**
-     * 请求蓝图列表
-     */
     public void requestBlueprintList() {
-        sendPacket(new RequestBlueprintListPayload());
+        MGMCNetwork.sendToServer(new RequestBlueprintListPayload());
     }
 
-    /**
-     * 删除蓝图
-     */
     public void deleteBlueprint(String name) {
-        sendPacket(new DeleteBlueprintPayload(name));
+        MGMCNetwork.sendToServer(new DeleteBlueprintPayload(name));
     }
 
-    /**
-     * 重命名蓝图
-     */
     public void renameBlueprint(String oldName, String newName) {
-        sendPacket(new RenameBlueprintPayload(oldName, newName));
+        MGMCNetwork.sendToServer(new RenameBlueprintPayload(oldName, newName));
     }
 
-    /**
-     * 复制蓝图
-     */
     public void duplicateBlueprint(String sourceName, String targetName) {
-        sendPacket(new DuplicateBlueprintPayload(sourceName, targetName));
+        MGMCNetwork.sendToServer(new DuplicateBlueprintPayload(sourceName, targetName));
     }
 
-    /**
-     * 请求蓝图具体数据
-     */
     public void requestMappings() {
-        sendPacket(new RequestMappingsPayload());
+        MGMCNetwork.sendToServer(new RequestMappingsPayload());
     }
 
-    /**
-     * 保存 ID 映射
-     */
     public void saveMappings(Map<String, Set<String>> mappings) {
-        sendPacket(new SaveMappingsPayload(new HashMap<>(mappings)));
+        MGMCNetwork.sendToServer(new SaveMappingsPayload(new HashMap<>(mappings)));
     }
 
-    /**
-     * 请求蓝图具体数据
-     */
     public void requestBlueprintData(String name) {
-        sendPacket(new RequestBlueprintDataPayload(name));
+        MGMCNetwork.sendToServer(new RequestBlueprintDataPayload(name));
     }
 
-    /**
-     * 发送蓝图工作台动作
-     */
     public void sendWorkbenchAction(WorkbenchActionPayload.Action action, String path) {
-        sendPacket(new WorkbenchActionPayload(action, path));
+        MGMCNetwork.sendToServer(new WorkbenchActionPayload(action, path));
     }
 
-    /**
-     * 请求导出蓝图
-     */
     public void requestExport(String name) {
-        sendPacket(new RequestExportPayload(name));
+        MGMCNetwork.sendToServer(new RequestExportPayload(name));
     }
 
-    /**
-     * 导入蓝图
-     */
     public void importBlueprint(String name, String data, Map<String, Set<String>> mappings) {
-        sendPacket(new ImportBlueprintPayload(name, data, mappings));
-    }
-
-    /**
-     * 统一发送自定义载荷数据包
-     */
-    private void sendPacket(net.minecraft.network.protocol.common.custom.CustomPacketPayload payload) {
-        ltd.opens.mg.mc.network.MGMCNetwork.sendToServer(payload);
+        MGMCNetwork.sendToServer(new ImportBlueprintPayload(name, data, mappings));
     }
 }

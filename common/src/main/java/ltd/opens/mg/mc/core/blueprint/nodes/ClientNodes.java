@@ -35,7 +35,7 @@ public class ClientNodes {
                 net.minecraft.client.Minecraft.getInstance().execute(() -> {
                     net.minecraft.client.gui.components.toasts.SystemToast.add(
                         net.minecraft.client.Minecraft.getInstance().getToasts(),
-                        net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId.NARRATOR_TOGGLE,
+                        net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds.NARRATOR_TOGGLE,
                         net.minecraft.network.chat.Component.literal(title),
                         net.minecraft.network.chat.Component.literal(message)
                     );
@@ -54,10 +54,14 @@ public class ClientNodes {
                 JsonObject params = new JsonObject();
                 params.addProperty("url", TypeConverter.toString(NodeLogicRegistry.evaluateInput(node, NodePorts.URL, ctx), ctx));
                 return params;
-            }, () -> (params, ctx) -> {
+            }            , () -> (params, ctx) -> {
                 String url = params.has("url") ? params.get("url").getAsString() : "";
                 if (!url.isEmpty()) {
-                    net.minecraft.Util.getPlatform().openUri(url);
+                    try {
+                        net.minecraft.Util.getPlatform().openUri(new java.net.URI(url));
+                    } catch (Exception e) {
+                        // ignore
+                    }
                 }
             });
     }

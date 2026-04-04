@@ -3,6 +3,7 @@ package ltd.opens.mg.mc.client.gui.blueprint.menu;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 
 public class BlueprintMenuRenderer {
@@ -83,12 +84,12 @@ public class BlueprintMenuRenderer {
 
     public static void renderBackground(GuiGraphics guiGraphics, int x, int y, int width, int height) {
         guiGraphics.fill(x, y, x + width, y + height, 0xF01E1E1E);
-        guiGraphics.renderOutline(x, y, width, height, 0xFF444444);
+        GuiCompat.renderOutline(guiGraphics, x, y, width, height, 0xFF444444);
     }
 
     public static void renderSearchBox(GuiGraphics guiGraphics, Font font, int x, int y, int width, int height, BlueprintMenu menu, Component hint) {
         guiGraphics.fill(x, y, x + width, y + height, 0xF0121212);
-        guiGraphics.renderOutline(x, y, width, height, 0xFF555555);
+        GuiCompat.renderOutline(guiGraphics, x, y, width, height, 0xFF555555);
         
         EditBox editBox = menu.getSearchEditBox();
         if (editBox == null) return;

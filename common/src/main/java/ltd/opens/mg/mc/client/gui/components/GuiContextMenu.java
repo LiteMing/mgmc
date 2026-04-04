@@ -2,6 +2,7 @@ package ltd.opens.mg.mc.client.gui.components;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,7 +78,7 @@ public class GuiContextMenu {
 
         // 绘制背景和边框
         graphics.fill(menuX, menuY, menuX + width, menuY + menuHeight, 0xFF202020);
-        graphics.renderOutline(menuX, menuY, width, menuHeight, 0xFFFFFFFF);
+        GuiCompat.renderOutline(graphics, menuX, menuY, width, menuHeight, 0xFFFFFFFF);
 
         for (int i = 0; i < items.size(); i++) {
             MenuItem item = items.get(i);

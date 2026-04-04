@@ -8,6 +8,7 @@ import ltd.opens.mg.mc.client.gui.screens.BlueprintSelectionScreen;
 import ltd.opens.mg.mc.client.gui.screens.BlueprintScreen;
 import ltd.opens.mg.mc.client.gui.screens.BlueprintMappingScreen;
 import ltd.opens.mg.mc.client.gui.screens.BlueprintWorkbenchScreen;
+import ltd.opens.mg.mc.core.registry.BlueprintItemHelper;
 import ltd.opens.mg.mc.network.payloads.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerLevel;
@@ -161,7 +162,6 @@ public class BlueprintNetworkHandler {
                     var manager = MaingraphforMC.getServerManager();
                     if (manager == null) return;
                     manager.getRouter().updateAllMappings((ServerLevel) player.level(), payload.mappings());
-                    // 广播更新？目前先简单回复
                     MGMCNetwork.sendToPlayer(player, new ResponseMappingsPayload(manager.getRouter().getFullRoutingTable((ServerLevel) player.level())));
                 }
             });
@@ -173,7 +173,7 @@ public class BlueprintNetworkHandler {
                     net.minecraft.world.item.ItemStack stack = menu.getTargetItem();
                     if (stack.isEmpty()) return;
 
-                    java.util.List<String> scripts = new java.util.ArrayList<>(stack.getOrDefault(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get(), java.util.Collections.emptyList()));
+                    java.util.List<String> scripts = new java.util.ArrayList<>(BlueprintItemHelper.getScripts(stack));
                     
                     if (payload.action() == WorkbenchActionPayload.Action.BIND) {
                         if (!scripts.contains(payload.blueprintPath())) {
@@ -183,11 +183,7 @@ public class BlueprintNetworkHandler {
                         scripts.remove(payload.blueprintPath());
                     }
 
-                    if (scripts.isEmpty()) {
-                        stack.remove(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get());
-                    } else {
-                        stack.set(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get(), scripts);
-                    }
+                    BlueprintItemHelper.setScripts(stack, scripts);
                     
                     menu.slotsChanged(null); // 通知槽位刷新
                 }

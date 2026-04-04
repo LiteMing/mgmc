@@ -16,7 +16,9 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 
 import ltd.opens.mg.mc.core.blueprint.data.XYZ;
 
@@ -151,7 +153,7 @@ public class ActionNodes {
 
                 try {
                     if (ctx.level instanceof ServerLevel serverLevel) {
-                        ResourceLocation id = ResourceLocation.parse(effectName);
+                        ResourceLocation id = new ResourceLocation(effectName);
                         Optional<ParticleType<?>> particleTypeOptional = BuiltInRegistries.PARTICLE_TYPE.getOptional(id);
                         if (particleTypeOptional.isPresent()) {
                             ParticleType<?> type = particleTypeOptional.get();
@@ -182,7 +184,7 @@ public class ActionNodes {
 
                 try {
                     if (ctx.level != null) {
-                        ctx.level.explode(null, pos.x(), pos.y(), pos.z(), radius, Level.ExplosionInteraction.TNT);
+                        ctx.level.explode(null, pos.x(), pos.y(), pos.z(), radius, Level.ExplosionInteraction.BLOCK);
                     }
                 } catch (Exception e) {
                     MaingraphforMC.LOGGER.error("Error in explosion node: " + node.get("id"), e);
@@ -231,7 +233,7 @@ public class ActionNodes {
                 else if (ctx.triggerEntity != null) entity = ctx.triggerEntity;
 
                 if (entity != null && amount > 0) {
-                    entity.hurt(entity.damageSources().generic(), amount);
+                    entity.hurt(((ServerLevel)entity.level()).damageSources().generic(), amount);
                 }
                 NodeLogicRegistry.triggerExec(node, NodePorts.EXEC, ctx);
             });
@@ -328,9 +330,10 @@ public class ActionNodes {
 
                 if (entity != null && effectName != null) {
                     try {
-                        Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.getHolder(ResourceLocation.parse(effectName));
+                        Optional<Holder.Reference<MobEffect>> holder = BuiltInRegistries.MOB_EFFECT.getHolder(
+                            ResourceKey.create(Registries.MOB_EFFECT, new ResourceLocation(effectName)));
                         if (holder.isPresent()) {
-                            entity.addEffect(new MobEffectInstance(holder.get(), duration, amplifier, false, showParticles));
+                            entity.addEffect(new MobEffectInstance(holder.get().value(), duration, amplifier, false, showParticles));
                         }
                     } catch (Exception e) {
                         MaingraphforMC.LOGGER.error("Error in add_potion_effect node: " + node.get("id"), e);

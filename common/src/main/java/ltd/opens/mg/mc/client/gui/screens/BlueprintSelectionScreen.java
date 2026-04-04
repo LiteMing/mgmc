@@ -10,6 +10,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,7 @@ public class BlueprintSelectionScreen extends Screen {
         }
 
         // List area: 60px top margin (to accommodate Create box), 60px bottom margin
-        this.list = new BlueprintList(this.minecraft, this.width, this.height - 120, 60, 24);
+        this.list = new BlueprintList(this.minecraft, this.width, this.height - 120, 60, this.height - 60, 24);
         
         this.addRenderableWidget(this.list);
         this.setFocused(this.list);
@@ -332,8 +333,8 @@ public class BlueprintSelectionScreen extends Screen {
     }
 
     class BlueprintList extends ObjectSelectionList<BlueprintEntry> {
-        public BlueprintList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public BlueprintList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
 
         public void add(BlueprintEntry entry) {
@@ -389,10 +390,10 @@ public class BlueprintSelectionScreen extends Screen {
             // Render background if selected or hovered
             if (this == BlueprintSelectionScreen.this.list.getSelected()) {
                 guiGraphics.fill(entryLeft, y, entryLeft + entryWidth, y + entryHeight, 0x44FFFFFF);
-                guiGraphics.renderOutline(entryLeft, y, entryWidth, entryHeight, 0xFFFFCC00);
+                GuiCompat.renderOutline(guiGraphics, entryLeft, y, entryWidth, entryHeight, 0xFFFFCC00);
             } else if (isHovered) {
                 guiGraphics.fill(entryLeft, y, entryLeft + entryWidth, y + entryHeight, 0x22FFFFFF);
-                guiGraphics.renderOutline(entryLeft, y, entryWidth, entryHeight, 0xFF888888);
+                GuiCompat.renderOutline(guiGraphics, entryLeft, y, entryWidth, entryHeight, 0xFF888888);
             }
 
             int color = this == BlueprintSelectionScreen.this.list.getSelected() ? 0xFFFFCC00 : (isHovered ? 0xFFFFFFFF : 0xFFAAAAAA);

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.screens.Screen;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 
@@ -61,7 +62,6 @@ public class InputModalScreen extends Screen {
                 this.editBox.setFilter(s -> s.isEmpty() || s.matches("^-?\\d*\\.?\\d*$"));
             }
             this.addRenderableWidget(this.editBox);
-            this.setInitialFocus(this.editBox);
 
             this.addRenderableWidget(Button.builder(Component.translatable("gui.mgmc.modal.confirm"), (btn) -> {
                 onConfirm.accept(editBox.getValue());
@@ -77,7 +77,7 @@ public class InputModalScreen extends Screen {
             // Selection Mode
             if (options != null) {
                 int listHeight = height - 60;
-                this.selectionList = new SelectionList(this.minecraft, width - 20, listHeight, startY + 30, 20);
+                this.selectionList = new SelectionList(this.minecraft, width - 20, listHeight, startY + 30, startY + 30 + listHeight, 20);
                 this.selectionList.setX(startX + 10);
                 
                 for (String opt : options) {
@@ -106,7 +106,7 @@ public class InputModalScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(GuiGraphics guiGraphics) {
         guiGraphics.fill(0, 0, this.width, this.height, 0x88000000);
         
         int width = 200;
@@ -115,7 +115,7 @@ public class InputModalScreen extends Screen {
         int startY = (this.height - height) / 2;
         
         guiGraphics.fill(startX, startY, startX + width, startY + height, 0xEE1A1A1A);
-        guiGraphics.renderOutline(startX, startY, width, height, 0xFFFFFFFF);
+        GuiCompat.renderOutline(guiGraphics, startX, startY, width, height, 0xFFFFFFFF);
         
         guiGraphics.drawString(font, titleStr, startX + 10, startY + 10, 0xFFFFFFFF, false);
     }
@@ -171,8 +171,8 @@ public class InputModalScreen extends Screen {
     }
 
     class SelectionList extends ObjectSelectionList<StringEntry> {
-        public SelectionList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public SelectionList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
         
         public void add(StringEntry entry) {
@@ -190,8 +190,10 @@ public class InputModalScreen extends Screen {
 
         @Override
         protected int getScrollbarPosition() {
-            return this.getX() + this.width - 6;
+            return this.x0 + this.width - 6;
         }
+
+        public void setX(int x) { this.x0 = x; }
     }
 
     class StringEntry extends ObjectSelectionList.Entry<StringEntry> {

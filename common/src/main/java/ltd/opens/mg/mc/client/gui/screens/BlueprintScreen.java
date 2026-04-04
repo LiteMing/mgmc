@@ -4,6 +4,7 @@ import ltd.opens.mg.mc.MaingraphforMC;
 import ltd.opens.mg.mc.client.network.NetworkService;
 import ltd.opens.mg.mc.client.gui.blueprint.*;
 import ltd.opens.mg.mc.client.gui.blueprint.BlueprintSettingsPanel;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 
 import ltd.opens.mg.mc.client.gui.blueprint.handler.*;
 import ltd.opens.mg.mc.client.gui.blueprint.io.*;
@@ -183,8 +184,8 @@ public class BlueprintScreen extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-        // Do nothing to prevent default background blur/darkening in 1.21.1
+    public void renderBackground(GuiGraphics guiGraphics) {
+        // Do nothing to prevent default background blur/darkening
         // We draw our own background in render() via BlueprintRenderer.drawGrid()
     }
 
@@ -309,7 +310,7 @@ public class BlueprintScreen extends Screen {
             int borderColor = (alphaInt << 24) | 0x555555;
 
             guiGraphics.fill(popupX, popupY, popupX + popupW, popupY + popupH, bgColor);
-            guiGraphics.renderOutline(popupX, popupY, popupW, popupH, borderColor);
+            GuiCompat.renderOutline(guiGraphics, popupX, popupY, popupW, popupH, borderColor);
             guiGraphics.drawString(font, state.notificationMessage, popupX + 10, popupY + (popupH - 9) / 2, textColor, false);
 
             // Draw close "X" indicator
@@ -387,7 +388,7 @@ public class BlueprintScreen extends Screen {
 
         if (bgColor != 0) {
             guiGraphics.fill(x, y, x + w, y + h, bgColor);
-            guiGraphics.renderOutline(x, y, w, h, borderColor);
+            GuiCompat.renderOutline(guiGraphics, x, y, w, h, borderColor);
         }
         
         // Progress bar for long press
@@ -576,10 +577,10 @@ public class BlueprintScreen extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollHorizontal, double scrollVertical) {
-        if (BlueprintSettingsPanel.mouseScrolled(this, state, mouseX, mouseY, scrollVertical)) {
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (BlueprintSettingsPanel.mouseScrolled(this, state, mouseX, mouseY, delta)) {
             return true;
         }
-        return eventHandler.mouseScrolled(mouseX, mouseY, scrollHorizontal, scrollVertical, this) || super.mouseScrolled(mouseX, mouseY, scrollHorizontal, scrollVertical);
+        return eventHandler.mouseScrolled(mouseX, mouseY, 0, delta, this) || super.mouseScrolled(mouseX, mouseY, delta);
     }
 }

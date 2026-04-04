@@ -50,7 +50,7 @@ public class BlockNodes {
                 
                 if (xyzObj instanceof XYZ xyz && ctx.level != null) {
                     BlockPos pos = new BlockPos((int)xyz.x(), (int)xyz.y(), (int)xyz.z());
-                    ResourceLocation rl = ResourceLocation.parse(blockId);
+                    ResourceLocation rl = new ResourceLocation(blockId);
                     Block block = BuiltInRegistries.BLOCK.get(rl);
                     if (block != Blocks.AIR || blockId.equals("minecraft:air")) {
                          ctx.level.setBlock(pos, block.defaultBlockState(), 3);
@@ -95,7 +95,7 @@ public class BlockNodes {
                 String blockId = TypeConverter.toString(NodeLogicRegistry.evaluateInput(node, NodePorts.BLOCK_ID, ctx), ctx);
                 
                 if (minObj instanceof XYZ min && maxObj instanceof XYZ max && ctx.level != null) {
-                    ResourceLocation rl = ResourceLocation.parse(blockId);
+                    ResourceLocation rl = new ResourceLocation(blockId);
                     Block block = BuiltInRegistries.BLOCK.get(rl);
                     if (block != Blocks.AIR || blockId.equals("minecraft:air")) {
                         BlockState state = block.defaultBlockState();

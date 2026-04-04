@@ -32,13 +32,18 @@ public class IdMetadataHelper {
 
     public static IdInfo getInfo(String id) {
         if (id.equals(BlueprintRouter.GLOBAL_ID)) {
-            return new IdInfo(id, Component.translatable("gui.mgmc.mapping.id.global"), new ItemStack(Items.GLOBE_BANNER_PATTERN), true);
+            return new IdInfo(id, Component.translatable("gui.mgmc.mapping.id.global"), new ItemStack(Items.COMPASS), true);
         }
         if (id.equals(BlueprintRouter.PLAYERS_ID)) {
             return new IdInfo(id, Component.translatable("gui.mgmc.mapping.id.players"), new ItemStack(Items.PLAYER_HEAD), true);
         }
 
-        ResourceLocation rl = ResourceLocation.tryParse(id);
+        ResourceLocation rl;
+        try {
+            rl = new ResourceLocation(id);
+        } catch (Exception e) {
+            rl = null;
+        }
         if (rl != null) {
             // 尝试作为物品
             net.minecraft.world.item.Item item = BuiltInRegistries.ITEM.get(rl);

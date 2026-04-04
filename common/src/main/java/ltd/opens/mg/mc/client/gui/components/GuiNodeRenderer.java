@@ -1,6 +1,7 @@
 package ltd.opens.mg.mc.client.gui.components;
  
 import ltd.opens.mg.mc.client.gui.blueprint.Viewport;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import ltd.opens.mg.mc.core.blueprint.NodeDefinition;
 import ltd.opens.mg.mc.core.blueprint.NodePorts;
 import net.minecraft.client.gui.Font;
@@ -26,8 +27,8 @@ public class GuiNodeRenderer {
             float alpha = Math.min(1.0f, highlightTimer / 10.0f);
             int color = ((int)(alpha * 255) << 24) | 0xFFFFFF;
             int expand = (int) (4 * (1.0f - alpha * 0.5f));
-            guiGraphics.renderOutline((int) node.x - expand, (int) node.y - expand, (int) node.width + expand * 2, (int) node.height + expand * 2, color);
-            guiGraphics.renderOutline((int) node.x - expand - 1, (int) node.y - expand - 1, (int) node.width + expand * 2 + 2, (int) node.height + expand * 2 + 2, color);
+            GuiCompat.renderOutline(guiGraphics, (int) node.x - expand, (int) node.y - expand, (int) node.width + expand * 2, (int) node.height + expand * 2, color);
+            GuiCompat.renderOutline(guiGraphics, (int) node.x - expand - 1, (int) node.y - expand - 1, (int) node.width + expand * 2 + 2, (int) node.height + expand * 2 + 2, color);
         }
 
         // Background
@@ -41,10 +42,10 @@ public class GuiNodeRenderer {
         // Simplified border: only draw if hovered or at reasonable zoom
         if (isHovered || node.isSelected || zoom > 0.4f) {
             int borderColor = node.isSelected ? 0xFFFFCC00 : (isHovered ? 0xFFFFFFFF : 0xFF333333);
-            guiGraphics.renderOutline((int) node.x, (int) node.y, (int) node.width, (int) node.height, borderColor);
+            GuiCompat.renderOutline(guiGraphics, (int) node.x, (int) node.y, (int) node.width, (int) node.height, borderColor);
             if (node.isSelected) {
                 // Thicker highlight for selection
-                guiGraphics.renderOutline((int) node.x - 1, (int) node.y - 1, (int) node.width + 2, (int) node.height + 2, borderColor);
+                GuiCompat.renderOutline(guiGraphics, (int) node.x - 1, (int) node.y - 1, (int) node.width + 2, (int) node.height + 2, borderColor);
             }
         }
         
@@ -95,7 +96,7 @@ public class GuiNodeRenderer {
                 boolean hovered = worldMouseX >= btnX && worldMouseX <= btnX + btnW && worldMouseY >= btnY && worldMouseY <= btnY + btnH;
                 
                 guiGraphics.fill(btnX, btnY, btnX + btnW, btnY + btnH, hovered ? 0xFF444444 : 0xFF333333);
-                guiGraphics.renderOutline(btnX, btnY, btnW, btnH, 0xFF555555);
+                GuiCompat.renderOutline(guiGraphics, btnX, btnY, btnW, btnH, 0xFF555555);
                 
                 Component btnText = Component.translatable(buttonLabel);
                 guiGraphics.drawString(font, btnText, btnX + (btnW - font.width(btnText)) / 2, btnY + 4, 0xFFFFFFFF, false);
@@ -144,12 +145,12 @@ public class GuiNodeRenderer {
                         
                         int boxColor = boolVal ? 0xFF36CF36 : 0xFF333333;
                         guiGraphics.fill((int)inputX + 2, (int)inputY + 2, (int)inputX + 8, (int)inputY + 8, boxColor);
-                        guiGraphics.renderOutline((int)inputX + 1, (int)inputY + 1, 8, 8, 0xFFFFFFFF);
+                        GuiCompat.renderOutline(guiGraphics, (int)inputX + 1, (int)inputY + 1, 8, 8, 0xFFFFFFFF);
                         
                         Component text = Component.translatable(boolVal ? "gui.mgmc.bool.true" : "gui.mgmc.bool.false");
                         guiGraphics.drawString(font, text, (int)inputX + 12, (int)inputY + 1, 0xFFCCCCCC, false);
                     } else if (port.options != null && port.options.length > 0) {
-                        guiGraphics.renderOutline((int)inputX, (int)inputY, (int)inputWidth, (int)inputHeight, 0xFFFFFFFF);
+                        GuiCompat.renderOutline(guiGraphics, (int)inputX, (int)inputY, (int)inputWidth, (int)inputHeight, 0xFFFFFFFF);
                         
                         JsonElement val = node.inputValues.get(port.id);
                         String text = val != null ? val.getAsString() : (port.defaultValue != null ? port.defaultValue.toString() : port.options[0]);
@@ -158,19 +159,19 @@ public class GuiNodeRenderer {
                         
                         String renderText = text;
                         if (font.width(renderText) > inputWidth - 12) {
-                            renderText = font.plainSubstrByWidth(renderText, (int)inputWidth - 15, true) + "..";
+                            renderText = font.plainSubstrByWidth(renderText, (int)inputWidth - 15) + "..";
                         }
                         guiGraphics.drawString(font, renderText, (int)inputX + 2, (int)inputY + 1, 0xFFCCCCCC, false);
                     } else {
                         boolean isFocused = focusedNode == node && focusedPort != null && focusedPort.equals(port.id);
-                        guiGraphics.renderOutline((int)inputX, (int)inputY, (int)inputWidth, (int)inputHeight, isFocused ? 0xFFFFFFFF : 0x33FFFFFF);
+                        GuiCompat.renderOutline(guiGraphics, (int)inputX, (int)inputY, (int)inputWidth, (int)inputHeight, isFocused ? 0xFFFFFFFF : 0x33FFFFFF);
                         
                         JsonElement val = node.inputValues.get(port.id);
                         String text = val != null ? val.getAsString() : (port.defaultValue != null ? port.defaultValue.toString() : "");
                         
                         String renderText = text;
                         if (font.width(renderText) > inputWidth - 4) {
-                            renderText = "..." + font.plainSubstrByWidth(renderText, (int)inputWidth - 10, true);
+                            renderText = "..." + font.plainSubstrByWidth(renderText, (int)inputWidth - 10);
                         }
                         guiGraphics.drawString(font, renderText, (int)inputX + 2, (int)inputY + 1, 0xFFCCCCCC, false);
                     }

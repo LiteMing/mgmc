@@ -3,6 +3,7 @@ package ltd.opens.mg.mc.client.gui.blueprint;
 import com.mojang.blaze3d.systems.RenderSystem;
 import ltd.opens.mg.mc.client.gui.screens.BlueprintScreen;
 import ltd.opens.mg.mc.client.gui.blueprint.settings.*;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,7 +47,7 @@ public class BlueprintSettingsPanel {
             // Background
             guiGraphics.fill(0, 0, width, height, ((int)(0x88 * scale) << 24)); // Dim background with fade
             guiGraphics.fill(menuX, menuY, menuX + menuW, menuY + menuH, 0xFF2D2D2D);
-            guiGraphics.renderOutline(menuX, menuY, menuW, menuH, 0xFF555555);
+            GuiCompat.renderOutline(guiGraphics, menuX, menuY, menuW, menuH, 0xFF555555);
 
             // Title
             String settingsTitle = Component.translatable("gui.mgmc.settings.title").getString(); // "Editor Settings"
@@ -57,7 +58,7 @@ public class BlueprintSettingsPanel {
             guiGraphics.drawString(font, "×", menuX + menuW - 15, menuY + 10, 0xFFAAAAAA, false);
 
             // Scissor for scrolling content
-            guiGraphics.enableScissor(menuX, menuY + 26, menuX + menuW, menuY + menuH);
+            RenderSystem.enableScissor(menuX, menuY + 26, menuW, menuH - 26);
 
             int currentY = (int)(menuY + 35 - state.settingsScrollY);
             Collection<SettingsDefinition> settings = SettingsRegistry.getDefinitions();
@@ -77,7 +78,7 @@ public class BlueprintSettingsPanel {
                     int toggleH = 10;
                     
                     guiGraphics.fill(toggleX, toggleY, toggleX + toggleW, toggleY + toggleH, isEnabled ? 0xFF44AA44 : 0xFF884444);
-                    guiGraphics.renderOutline(toggleX, toggleY, toggleW, toggleH, 0xFF000000);
+                    GuiCompat.renderOutline(guiGraphics, toggleX, toggleY, toggleW, toggleH, 0xFF000000);
                     if (isEnabled) {
                         guiGraphics.fill(toggleX + toggleW - 8, toggleY + 1, toggleX + toggleW - 1, toggleY + toggleH - 1, 0xFFFFFFFF);
                     } else {
@@ -106,7 +107,7 @@ public class BlueprintSettingsPanel {
             if (contentHeight < 100) contentHeight = 100;
             state.settingsContentHeight = contentHeight;
 
-            guiGraphics.disableScissor();
+            RenderSystem.disableScissor();
             
             // Scrollbar
             float maxScroll = Math.max(0, state.settingsContentHeight - (menuH - 30));

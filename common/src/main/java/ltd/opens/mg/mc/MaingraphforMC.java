@@ -8,6 +8,7 @@ import ltd.opens.mg.mc.core.blueprint.EntityVariableManager;
 import ltd.opens.mg.mc.core.blueprint.GlobalVariableManager;
 import ltd.opens.mg.mc.core.blueprint.routing.BlueprintRouter;
 import ltd.opens.mg.mc.core.blueprint.engine.BlueprintEngine;
+import ltd.opens.mg.mc.core.registry.BlueprintItemHelper;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.CommandSourceStack;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -119,16 +120,13 @@ public class MaingraphforMC {
         return true;
     }
 
-    public static void onRegisterCommands(com.mojang.brigadier.CommandDispatcher<CommandSourceStack> dispatcher, net.minecraft.commands.CommandBuildContext registry, net.minecraft.commands.Commands.CommandSelection selection) {
+    public static void onRegisterCommands(com.mojang.brigadier.CommandDispatcher<CommandSourceStack> dispatcher, net.minecraft.commands.CommandBuildContext buildContext, net.minecraft.commands.Commands.CommandSelection selection) {
         dispatcher.register(Commands.literal("mgmc")
             .requires(MaingraphforMC::hasPermission)
             .then(Commands.literal("workbench")
                 .executes(context -> {
                     if (context.getSource().getPlayer() != null) {
                         ServerPlayer player = (ServerPlayer) context.getSource().getPlayer();
-                        // Open Menu using Architectury MenuRegistry if needed, or standard way if it works
-                        // For MenuType<BlueprintWorkbenchMenu>, we need to open it.
-                        // In Architectury, MenuRegistry.openMenu is preferred for ExtendedMenu
                         dev.architectury.registry.menu.MenuRegistry.openMenu(player, 
                             new net.minecraft.world.SimpleMenuProvider(
                                 (id, inv, p) -> new ltd.opens.mg.mc.core.blueprint.inventory.BlueprintWorkbenchMenu(id, inv),
@@ -150,10 +148,10 @@ public class MaingraphforMC {
                                 return 0;
                             }
                             String path = StringArgumentType.getString(context, "blueprint");
-                            java.util.List<String> scripts = new java.util.ArrayList<>(stack.getOrDefault(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get(), java.util.Collections.emptyList()));
+                            java.util.List<String> scripts = new java.util.ArrayList<>(BlueprintItemHelper.getScripts(stack));
                             if (!scripts.contains(path)) {
                                 scripts.add(path);
-                                stack.set(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get(), scripts);
+                                BlueprintItemHelper.setScripts(stack, scripts);
                                 context.getSource().sendSuccess(() -> Component.translatable("command.mgmc.workbench.bind.success", path), true);
                             } else {
                                 context.getSource().sendFailure(Component.translatable("command.mgmc.workbench.already_bound"));
@@ -171,13 +169,9 @@ public class MaingraphforMC {
                             net.minecraft.world.item.ItemStack stack = player.getMainHandItem();
                             if (stack.isEmpty()) return 0;
                             String path = StringArgumentType.getString(context, "blueprint");
-                            java.util.List<String> scripts = new java.util.ArrayList<>(stack.getOrDefault(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get(), java.util.Collections.emptyList()));
+                            java.util.List<String> scripts = new java.util.ArrayList<>(BlueprintItemHelper.getScripts(stack));
                             if (scripts.remove(path)) {
-                                if (scripts.isEmpty()) {
-                                    stack.remove(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get());
-                                } else {
-                                    stack.set(ltd.opens.mg.mc.core.registry.MGMCRegistries.BLUEPRINT_SCRIPTS.get(), scripts);
-                                }
+                                BlueprintItemHelper.setScripts(stack, scripts);
                                 context.getSource().sendSuccess(() -> Component.translatable("command.mgmc.workbench.unbind.success", path), true);
                             }
                         }
@@ -213,14 +207,14 @@ public class MaingraphforMC {
                     if (manager != null) {
                         java.util.List<BlueprintManager.LogEntry> logs = manager.getLogs();
                         if (logs.isEmpty()) {
-                            context.getSource().sendSuccess(() -> Component.literal("§7[MGMC] No logs available."), false);
+                            context.getSource().sendSuccess(() -> Component.literal("\u00a77[MGMC] No logs available."), false);
                         } else {
-                            context.getSource().sendSuccess(() -> Component.literal("§6--- MGMC Runtime Logs (Last " + logs.size() + ") ---"), false);
+                            context.getSource().sendSuccess(() -> Component.literal("\u00a76--- MGMC Runtime Logs (Last " + logs.size() + ") ---"), false);
                             for (var log : logs) {
-                                String color = log.level().equals("ERROR") ? "§c" : "§f";
+                                String color = log.level().equals("ERROR") ? "\u00a7c" : "\u00a7f";
                                 String time = new java.text.SimpleDateFormat("HH:mm:ss").format(new java.util.Date(log.timestamp()));
                                 context.getSource().sendSuccess(() -> Component.literal(
-                                    String.format("§8[%s] %s[%s] §7(%s) §f%s", 
+                                    String.format("\u00a78[%s] %s[%s] \u00a7(%s) \u00a7f%s", 
                                         time, color, log.level(), log.blueprintName(), log.message())
                                 ), false);
                             }

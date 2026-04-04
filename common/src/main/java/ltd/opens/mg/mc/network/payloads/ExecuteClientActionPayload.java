@@ -2,28 +2,19 @@ package ltd.opens.mg.mc.network.payloads;
 
 import ltd.opens.mg.mc.MaingraphforMC;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-public record ExecuteClientActionPayload(String blueprintName, String nodeId, String actionType, String data) implements CustomPacketPayload {
-    public static final CustomPacketPayload.Type<ExecuteClientActionPayload> TYPE = new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath(MaingraphforMC.MODID, "execute_client_action"));
-    
-    public static final StreamCodec<FriendlyByteBuf, ExecuteClientActionPayload> STREAM_CODEC = StreamCodec.composite(
-            ByteBufCodecs.STRING_UTF8,
-            ExecuteClientActionPayload::blueprintName,
-            ByteBufCodecs.STRING_UTF8,
-            ExecuteClientActionPayload::nodeId,
-            ByteBufCodecs.STRING_UTF8,
-            ExecuteClientActionPayload::actionType,
-            ByteBufCodecs.STRING_UTF8,
-            ExecuteClientActionPayload::data,
-            ExecuteClientActionPayload::new
-    );
+public record ExecuteClientActionPayload(String blueprintName, String nodeId, String actionType, String data) {
+    public static final ResourceLocation ID = new ResourceLocation(MaingraphforMC.MODID, "execute_client_action");
 
-    @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
-        return TYPE;
+    public static ExecuteClientActionPayload decode(FriendlyByteBuf buf) {
+        return new ExecuteClientActionPayload(buf.readUtf(), buf.readUtf(), buf.readUtf(), buf.readUtf());
+    }
+
+    public static void encode(FriendlyByteBuf buf, ExecuteClientActionPayload payload) {
+        buf.writeUtf(payload.blueprintName());
+        buf.writeUtf(payload.nodeId());
+        buf.writeUtf(payload.actionType());
+        buf.writeUtf(payload.data());
     }
 }

@@ -2,7 +2,7 @@ package ltd.opens.mg.mc.client.gui.screens;
 
 import ltd.opens.mg.mc.client.network.NetworkService;
 import ltd.opens.mg.mc.core.blueprint.inventory.BlueprintWorkbenchMenu;
-import ltd.opens.mg.mc.core.registry.MGMCRegistries;
+import ltd.opens.mg.mc.core.registry.BlueprintItemHelper;
 import ltd.opens.mg.mc.network.payloads.WorkbenchActionPayload;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -36,11 +36,11 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
         int listHeight = 90;
         int listY = this.topPos + 35;
 
-        this.boundBlueprintsList = new BoundBlueprintList(this.minecraft, listWidth, listHeight, listY, 20);
+        this.boundBlueprintsList = new BoundBlueprintList(this.minecraft, listWidth, listHeight, listY, listY + listHeight, 20);
         this.boundBlueprintsList.setX(this.leftPos + 55);
         this.addRenderableWidget(this.boundBlueprintsList);
 
-        this.allBlueprintsList = new BlueprintList(this.minecraft, listWidth, listHeight, listY, 20);
+        this.allBlueprintsList = new BlueprintList(this.minecraft, listWidth, listHeight, listY, listY + listHeight, 20);
         this.allBlueprintsList.setX(this.leftPos + 160);
         this.addRenderableWidget(this.allBlueprintsList);
 
@@ -71,7 +71,8 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
         super.containerTick();
         if (this.boundBlueprintsList != null) {
             ItemStack stack = this.menu.getTargetItem();
-            List<String> scripts = stack.isEmpty() ? null : stack.get(MGMCRegistries.BLUEPRINT_SCRIPTS.get());
+            List<String> scripts = stack.isEmpty() ? null : BlueprintItemHelper.getScripts(stack);
+            if (scripts != null && scripts.isEmpty()) scripts = null;
             
             boolean changed = false;
             if (stack.isEmpty() != lastStack.isEmpty()) {
@@ -95,7 +96,7 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        this.renderBackground(graphics, mouseX, mouseY, partialTick);
+        this.renderBackground(graphics);
         super.render(graphics, mouseX, mouseY, partialTick);
         this.renderTooltip(graphics, mouseX, mouseY);
     }
@@ -123,7 +124,7 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
         // 渲染当前手持的物品图标
         ItemStack heldItem = this.menu.getTargetItem();
         if (!heldItem.isEmpty()) {
-                graphics.renderFakeItem(heldItem, slotX + 1, slotY + 1);
+                graphics.renderItem(heldItem, slotX + 1, slotY + 1);
                 graphics.renderItemDecorations(this.font, heldItem, slotX + 1, slotY + 1);
             } else {
                 // 如果手空，画个淡淡的提示
@@ -140,10 +141,10 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontal, double vertical) {
-        if (this.boundBlueprintsList.mouseScrolled(mouseX, mouseY, horizontal, vertical)) return true;
-        if (this.allBlueprintsList.mouseScrolled(mouseX, mouseY, horizontal, vertical)) return true;
-        return super.mouseScrolled(mouseX, mouseY, horizontal, vertical);
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        if (this.boundBlueprintsList.mouseScrolled(mouseX, mouseY, delta)) return true;
+        if (this.allBlueprintsList.mouseScrolled(mouseX, mouseY, delta)) return true;
+        return super.mouseScrolled(mouseX, mouseY, delta);
     }
 
     private void renderPanel(GuiGraphics g, int x, int y, int w, int h, String label) {
@@ -162,14 +163,16 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
     }
 
     private class BlueprintList extends ObjectSelectionList<BlueprintEntry> {
-        public BlueprintList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public BlueprintList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
         public void add(BlueprintEntry entry) { super.addEntry(entry); }
         public void clear() { super.clearEntries(); }
         @Override
         public int getRowWidth() { return this.width - 4; }
         
+        public void setX(int x) { this.x0 = x; }
+
         // 暴露给 Entry 访问
         @Override
         public BlueprintEntry getSelected() { return super.getSelected(); }
@@ -212,8 +215,8 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
     }
 
     private class BoundBlueprintList extends ObjectSelectionList<BoundEntry> {
-        public BoundBlueprintList(Minecraft minecraft, int width, int height, int y, int itemHeight) {
-            super(minecraft, width, height, y, itemHeight);
+        public BoundBlueprintList(Minecraft minecraft, int width, int height, int top, int bottom, int itemHeight) {
+            super(minecraft, width, height, top, bottom, itemHeight);
         }
         public void updateList(List<String> blueprints) {
             String selected = this.getSelected() != null ? this.getSelected().path : null;
@@ -227,6 +230,9 @@ public class BlueprintWorkbenchScreen extends AbstractContainerScreen<BlueprintW
         public void clear() { super.clearEntries(); }
         @Override
         public int getRowWidth() { return this.width - 4; }
+
+        public void setX(int x) { this.x0 = x; }
+        public int getX() { return this.x0; }
 
         // 暴露给 Entry 访问
         public int getEntryWidth() { return this.getRowWidth(); }

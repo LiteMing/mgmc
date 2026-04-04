@@ -4,6 +4,7 @@ package ltd.opens.mg.mc.client.gui.blueprint.render;
 import ltd.opens.mg.mc.client.gui.blueprint.BlueprintState;
 import ltd.opens.mg.mc.client.gui.blueprint.Viewport;
 import ltd.opens.mg.mc.client.gui.components.*;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import java.util.List;
@@ -68,7 +69,7 @@ public class BlueprintRenderer {
                 guiGraphics.fill((int) region.x, (int) region.y, (int) (region.x + region.width), (int) (region.y + 20), (color & 0x00FFFFFF) | 0xAA000000);
                 
                 // Border
-                guiGraphics.renderOutline((int) region.x, (int) region.y, (int) region.width, (int) region.height, borderColor);
+                GuiCompat.renderOutline(guiGraphics, (int) region.x, (int) region.y, (int) region.width, (int) region.height, borderColor);
                 
                 // Title
                 guiGraphics.drawString(font, region.title, (int) region.x + 5, (int) region.y + 6, 0xFFFFFFFF);
@@ -79,7 +80,7 @@ public class BlueprintRenderer {
                 }
             } else {
                  // Simple border for low zoom
-                 guiGraphics.renderOutline((int) region.x, (int) region.y, (int) region.width, (int) region.height, borderColor);
+                 GuiCompat.renderOutline(guiGraphics, (int) region.x, (int) region.y, (int) region.width, (int) region.height, borderColor);
             }
         }
     }
@@ -183,7 +184,7 @@ public class BlueprintRenderer {
         // Draw translucent fill
         guiGraphics.fill(minX, minY, maxX, maxY, 0x334488FF);
         // Draw outline
-        guiGraphics.renderOutline(minX, minY, maxX - minX, maxY - minY, 0xFF4488FF);
+        GuiCompat.renderOutline(guiGraphics, minX, minY, maxX - minX, maxY - minY, 0xFF4488FF);
     }
 
     public static void drawNodeWProgressBar(GuiGraphics guiGraphics, GuiNode node, float progress) {
@@ -226,7 +227,7 @@ public class BlueprintRenderer {
 
         // Draw background
         guiGraphics.fill(x, y, x + minimapWidth, y + minimapHeight, 0xAA121212);
-        guiGraphics.renderOutline(x, y, minimapWidth, minimapHeight, 0xFF444444);
+        GuiCompat.renderOutline(guiGraphics, x, y, minimapWidth, minimapHeight, 0xFF444444);
 
         // Find bounds of all nodes and regions
         float minX = Float.MAX_VALUE, minY = Float.MAX_VALUE;
@@ -301,7 +302,7 @@ public class BlueprintRenderer {
 
         if (cvw > 0 && cvh > 0) {
             guiGraphics.fill(cvx, cvy, cvx + cvw, cvy + cvh, 0x22FFFFFF);
-            guiGraphics.renderOutline(cvx, cvy, cvw, cvh, 0x66FFFFFF);
+            GuiCompat.renderOutline(guiGraphics, cvx, cvy, cvw, cvh, 0x66FFFFFF);
         }
     }
 
@@ -322,7 +323,6 @@ public class BlueprintRenderer {
         state.markerEditBox.setX(sx + (int)(10 * viewport.zoom));
         state.markerEditBox.setY(sy + headerH + (int)(10 * viewport.zoom));
         state.markerEditBox.setWidth(sw - (int)(20 * viewport.zoom));
-        state.markerEditBox.setHeight((int)(20 * viewport.zoom));
         
         state.markerEditBox.render(guiGraphics, 0, 0, 0);
     }
@@ -340,7 +340,7 @@ public class BlueprintRenderer {
 
         // Background
         guiGraphics.fill(x, y, x + searchW, y + searchH, 0xF01A1A1A);
-        guiGraphics.renderOutline(x, y, searchW, searchH, 0xFFFFFFFF);
+        GuiCompat.renderOutline(guiGraphics, x, y, searchW, searchH, 0xFFFFFFFF);
 
         // Label
         String label = Component.translatable("gui.mgmc.quick_search.label").getString();
@@ -364,8 +364,8 @@ public class BlueprintRenderer {
             
             // List Background
             guiGraphics.fill(x, listY, x + searchW, listY + listHeight, 0xF01A1A1A);
-            guiGraphics.renderOutline(x, listY, searchW, listHeight, 0xFF555555);
-            
+            GuiCompat.renderOutline(guiGraphics, x, listY, searchW, listHeight, 0xFF555555);
+
             // Draw Items
             for (int i = 0; i < visibleCount; i++) {
                 int actualIdx = i + state.quickSearchScrollOffset;
@@ -449,7 +449,7 @@ public class BlueprintRenderer {
             int listY = y + searchH + 2;
             int listHeight = 24;
             guiGraphics.fill(x, listY, x + searchW, listY + listHeight, 0xF01A1A1A);
-            guiGraphics.renderOutline(x, listY, searchW, listHeight, 0xFF555555);
+            GuiCompat.renderOutline(guiGraphics, x, listY, searchW, listHeight, 0xFF555555);
             guiGraphics.drawString(font, Component.translatable("gui.mgmc.blueprint_editor.no_nodes_found"), x + 8, listY + 8, 0xFF888888, false);
         }
 
