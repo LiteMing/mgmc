@@ -300,6 +300,10 @@ public class BlueprintSelectionScreen extends Screen {
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
+
+        // Fix 1.20.1 ObjectSelectionList dark background extending below list bounds
+        // List bottom should be at this.height - 60; cover area below that
+        guiGraphics.fill(0, this.height - 60, this.width, this.height, 0xFF000000);
         
         // Draw title
         guiGraphics.drawCenteredString(this.font, this.title, this.width / 2, 15, 0xFFFFFF);

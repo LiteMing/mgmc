@@ -169,12 +169,15 @@ public class BlueprintNetworkHandler {
 
         public static void handleWorkbenchAction(final WorkbenchActionPayload payload, final NetworkManager.PacketContext context) {
             context.queue(() -> {
+                LOGGER.info("MGMC: Received workbench action {} path={}", payload.action(), payload.blueprintPath());
                 if (context.getPlayer() instanceof ServerPlayer player && player.containerMenu instanceof ltd.opens.mg.mc.core.blueprint.inventory.BlueprintWorkbenchMenu menu) {
                     net.minecraft.world.item.ItemStack stack = menu.getTargetItem();
+                    LOGGER.info("MGMC: Player={}, Menu OK, item={} empty={}", player.getName().getString(), stack.getItem(), stack.isEmpty());
                     if (stack.isEmpty()) return;
 
                     java.util.List<String> scripts = new java.util.ArrayList<>(BlueprintItemHelper.getScripts(stack));
-                    
+                    LOGGER.info("MGMC: Current scripts before: {}", scripts);
+
                     if (payload.action() == WorkbenchActionPayload.Action.BIND) {
                         if (!scripts.contains(payload.blueprintPath())) {
                             scripts.add(payload.blueprintPath());
@@ -184,8 +187,13 @@ public class BlueprintNetworkHandler {
                     }
 
                     BlueprintItemHelper.setScripts(stack, scripts);
+                    LOGGER.info("MGMC: After setScripts, item tag={}", stack.getTag());
                     
-                    menu.slotsChanged(null); // 通知槽位刷新
+                    // 回送当前绑定列表给客户端（因为 Menu 没有 Slot 不会自动同步）
+                    MGMCNetwork.sendToPlayer(player, new WorkbenchScriptsPayload(scripts));
+                } else {
+                    LOGGER.info("MGMC: Workbench action rejected - menu type mismatch: {}", 
+                        context.getPlayer().containerMenu.getClass().getName());
                 }
             });
         }
@@ -315,6 +323,15 @@ public class BlueprintNetworkHandler {
             context.queue(() -> {
                 ltd.opens.mg.mc.client.gui.blueprint.engine.ClientNodeLogicRegistry.execute(
                     payload.blueprintName(), payload.nodeId(), payload.actionType(), payload.data());
+            });
+        }
+
+        public static void handleWorkbenchScripts(final WorkbenchScriptsPayload payload, final NetworkManager.PacketContext context) {
+            LOGGER.info("MGMC: Received workbench scripts from server: {}", payload.scripts());
+            context.queue(() -> {
+                if (Minecraft.getInstance().screen instanceof BlueprintWorkbenchScreen workbenchScreen) {
+                    workbenchScreen.updateBoundScriptsFromServer(payload.scripts());
+                }
             });
         }
     }

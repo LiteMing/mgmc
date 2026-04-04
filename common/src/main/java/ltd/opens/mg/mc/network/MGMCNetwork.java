@@ -50,6 +50,8 @@ public class MGMCNetwork {
             (buf, ctx) -> BlueprintNetworkHandler.Client.handleRuntimeError(RuntimeErrorReportPayload.decode(buf), ctx));
         NetworkManager.registerReceiver(NetworkManager.s2c(), ExecuteClientActionPayload.ID,
             (buf, ctx) -> BlueprintNetworkHandler.Client.handleExecuteClientAction(ExecuteClientActionPayload.decode(buf), ctx));
+        NetworkManager.registerReceiver(NetworkManager.s2c(), WorkbenchScriptsPayload.ID,
+            (buf, ctx) -> BlueprintNetworkHandler.Client.handleWorkbenchScripts(WorkbenchScriptsPayload.decode(buf), ctx));
     }
 
     public static void sendToPlayer(ServerPlayer player, ResponseBlueprintListPayload payload) {
@@ -78,6 +80,10 @@ public class MGMCNetwork {
 
     public static void sendToPlayer(ServerPlayer player, ExecuteClientActionPayload payload) {
         NetworkManager.sendToPlayer(player, ExecuteClientActionPayload.ID, encodePayload(payload));
+    }
+
+    public static void sendToPlayer(ServerPlayer player, WorkbenchScriptsPayload payload) {
+        NetworkManager.sendToPlayer(player, WorkbenchScriptsPayload.ID, encodePayload(payload));
     }
 
     // C2S sends
@@ -141,6 +147,7 @@ public class MGMCNetwork {
         if (payload instanceof ResponseExportPayload p) return encode(p);
         if (payload instanceof RuntimeErrorReportPayload p) return encode(p);
         if (payload instanceof ExecuteClientActionPayload p) return encode(p);
+        if (payload instanceof WorkbenchScriptsPayload p) return encode(p);
         if (payload instanceof RequestBlueprintListPayload p) return encode(p);
         if (payload instanceof RequestBlueprintDataPayload p) return encode(p);
         if (payload instanceof SaveBlueprintPayload p) return encode(p);
@@ -165,6 +172,7 @@ public class MGMCNetwork {
     private static FriendlyByteBuf encode(ResponseExportPayload p) { FriendlyByteBuf b = buf(); ResponseExportPayload.encode(b, p); return b; }
     private static FriendlyByteBuf encode(RuntimeErrorReportPayload p) { FriendlyByteBuf b = buf(); RuntimeErrorReportPayload.encode(b, p); return b; }
     private static FriendlyByteBuf encode(ExecuteClientActionPayload p) { FriendlyByteBuf b = buf(); ExecuteClientActionPayload.encode(b, p); return b; }
+    private static FriendlyByteBuf encode(WorkbenchScriptsPayload p) { FriendlyByteBuf b = buf(); WorkbenchScriptsPayload.encode(b, p); return b; }
     private static FriendlyByteBuf encode(RequestBlueprintListPayload p) { FriendlyByteBuf b = buf(); RequestBlueprintListPayload.encode(b, p); return b; }
     private static FriendlyByteBuf encode(RequestBlueprintDataPayload p) { FriendlyByteBuf b = buf(); RequestBlueprintDataPayload.encode(b, p); return b; }
     private static FriendlyByteBuf encode(SaveBlueprintPayload p) { FriendlyByteBuf b = buf(); SaveBlueprintPayload.encode(b, p); return b; }

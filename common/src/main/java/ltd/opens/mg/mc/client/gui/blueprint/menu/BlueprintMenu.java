@@ -9,6 +9,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
 import com.mojang.blaze3d.systems.RenderSystem;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 
@@ -217,7 +218,7 @@ public class BlueprintMenu {
         if (filteredResults.isEmpty()) {
             guiGraphics.drawString(font, Component.translatable("gui.mgmc.blueprint_editor.no_nodes_found"), x + 8, contentY + 8, 0xFF888888, false);
         } else {
-            RenderSystem.enableScissor(x, contentY + 3, width, height - 6);
+            GuiCompat.enableScissor(x, contentY + 3, width, height - 6);
             int totalHeight = filteredResults.size() * itemHeight;
             scrollAmount = Mth.clamp(scrollAmount, 0, Math.max(0, totalHeight - (displayCount * itemHeight)));
             
@@ -285,7 +286,7 @@ public class BlueprintMenu {
         lastMenuContentY = contentY;
         lastMenuHeight = height;
         
-        RenderSystem.enableScissor(x, contentY + 3, width, height - 6);
+        GuiCompat.enableScissor(x, contentY + 3, width, height - 6);
         int totalHeight = totalItems * itemHeight;
         scrollAmount = Mth.clamp(scrollAmount, 0, Math.max(0, totalHeight - (displayCount * itemHeight)));
 
@@ -430,7 +431,7 @@ public class BlueprintMenu {
         if (subY < 0) subY = 5;
 
         BlueprintMenuRenderer.renderBackground(guiGraphics, subX, subY, subMenuWidth, subHeight);
-        RenderSystem.enableScissor(subX, subY + 3, subMenuWidth, subHeight - 6);
+        GuiCompat.enableScissor(subX, subY + 3, subMenuWidth, subHeight - 6);
         int subTotalHeight = catNodes.size() * itemHeight;
         subScrollAmount = Mth.clamp(subScrollAmount, 0, Math.max(0, subTotalHeight - (subDisplayCount * itemHeight)));
 

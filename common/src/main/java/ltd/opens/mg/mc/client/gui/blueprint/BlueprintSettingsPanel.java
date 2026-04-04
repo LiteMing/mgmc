@@ -1,6 +1,7 @@
 package ltd.opens.mg.mc.client.gui.blueprint;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import ltd.opens.mg.mc.client.gui.GuiCompat;
 import ltd.opens.mg.mc.client.gui.screens.BlueprintScreen;
 import ltd.opens.mg.mc.client.gui.blueprint.settings.*;
 import ltd.opens.mg.mc.client.gui.GuiCompat;
@@ -58,7 +59,7 @@ public class BlueprintSettingsPanel {
             guiGraphics.drawString(font, "×", menuX + menuW - 15, menuY + 10, 0xFFAAAAAA, false);
 
             // Scissor for scrolling content
-            RenderSystem.enableScissor(menuX, menuY + 26, menuW, menuH - 26);
+            GuiCompat.enableScissor(menuX, menuY + 26, menuW, menuH - 26);
 
             int currentY = (int)(menuY + 35 - state.settingsScrollY);
             Collection<SettingsDefinition> settings = SettingsRegistry.getDefinitions();
