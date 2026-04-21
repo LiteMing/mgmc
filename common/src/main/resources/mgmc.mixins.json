@@ -1,7 +1,8 @@
 {
   "required": true,
+  "minVersion": "0.8",
   "package": "ltd.opens.mg.mc.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "mixins": [],
   "injectors": {
     "defaultRequire": 1

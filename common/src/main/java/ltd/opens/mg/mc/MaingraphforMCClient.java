@@ -9,7 +9,6 @@ import ltd.opens.mg.mc.client.ClientSetup;
 import ltd.opens.mg.mc.client.gui.screens.AboutScreen;
 import ltd.opens.mg.mc.client.gui.screens.BlueprintSelectionScreen;
 import ltd.opens.mg.mc.core.registry.BlueprintItemHelper;
-import ltd.opens.mg.mc.core.blueprint.nodes.ClientNodes;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -20,7 +19,7 @@ import org.lwjgl.glfw.GLFW;
 import java.util.List;
 
 public class MaingraphforMCClient {
-    public static final String CATEGORY = "key.categories." + MaingraphforMC.MODID;
+    public static final String CATEGORY = "key.categories." + MaingraphforMC.MODID + ".main";
 
     public static final KeyMapping BLUEPRINT_KEY = new KeyMapping(
         "key.mgmc.open_blueprint",
@@ -46,16 +45,16 @@ public class MaingraphforMCClient {
     }
 
     private static EventResult onKeyInput(Minecraft client, int keyCode, int scanCode, int action, int modifiers) {
-        if (action == GLFW.GLFW_PRESS && keyCode == GLFW.GLFW_KEY_M) {
-            if ((modifiers & GLFW.GLFW_MOD_CONTROL) != 0) {
-                if (client.screen != null && client.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox) {
-                    return EventResult.pass();
-                }
-                handleBlueprintKey();
-                return EventResult.interruptTrue();
-            }
+        if (action != GLFW.GLFW_PRESS || !BLUEPRINT_KEY.matches(keyCode, scanCode)) {
+            return EventResult.pass();
         }
-        return EventResult.pass();
+
+        if (client.screen != null && client.screen.getFocused() instanceof net.minecraft.client.gui.components.EditBox) {
+            return EventResult.pass();
+        }
+
+        handleBlueprintKey();
+        return EventResult.interruptTrue();
     }
 
     private static void handleBlueprintKey() {

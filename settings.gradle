@@ -17,3 +17,4 @@ rootProject.name = "mgmc"
 
 include "common"
 include "fabric"
+include "forge"

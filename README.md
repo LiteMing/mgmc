@@ -1,8 +1,10 @@
 # Maingraph for MC
 
-![A badge showing "ModLoader" is "NeoForge"](https://img.shields.io/badge/ModLoader-NeoForge-orange.svg)
+![A badge showing "ModLoaders" are "Fabric and Forge"](https://img.shields.io/badge/ModLoaders-Fabric%20%7C%20Forge-blue.svg)
 
 **Maingraph for MC** is a visual blueprint engine designed for Minecraft. It allows for custom logic through intuitive node connections, requiring no (or very little) coding.
+
+Current `1.20.1` workspace targets `Fabric` and `Forge`.
 
 ---
 

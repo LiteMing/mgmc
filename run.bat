@@ -3,7 +3,8 @@ setlocal
 
 if "%1"=="" goto help
 if "%1"=="fabric" goto fabric
-if "%1"=="neoforge" goto neoforge
+if "%1"=="forge" goto forge
+if "%1"=="neoforge" goto forge
 if "%1"=="clean" goto clean
 if "%1"=="build" goto build
 
@@ -12,9 +13,9 @@ echo Starting Fabric client...
 call gradlew.bat :fabric:runClient
 goto end
 
-:neoforge
-echo Starting NeoForge client...
-call gradlew.bat :neoforge:runClient
+:forge
+echo Starting Forge client...
+call gradlew.bat :forge:runClient
 goto end
 
 :clean
@@ -31,7 +32,8 @@ goto end
 echo MGMC Quick Run Script
 echo Usage:
 echo   run.bat fabric      - Start Fabric client
-echo   run.bat neoforge    - Start NeoForge client
+echo   run.bat forge       - Start Forge client
+echo   run.bat neoforge    - Legacy alias, starts Forge client
 echo   run.bat build       - Build all platforms
 echo   run.bat clean       - Clean project
 goto end
